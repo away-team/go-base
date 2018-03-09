@@ -6,6 +6,7 @@ source `pwd`/build/vars.sh
 BasePath="/home/core/dev/"
 port="8080"
 dbPort="5432"
+buildContainer="golang:1.9.4"
 
 # The config env file to pass to docker run
 EnvFile="`pwd`/config/dev.env"
@@ -47,7 +48,8 @@ CurrentDir=`pwd`
 ServicePath="${CurrentDir/$BasePath/}"
 
 # run the build
-docker run --rm -it -v `pwd`:"/go/src/$ServicePath" -w /go/src/$ServicePath healthymation/docker-godep:1.7.3 ./build/build.sh -a || { echo 'build failed' ; exit 1; }
+echo "Building service"
+docker run --rm -it -v `pwd`:"/go/src/$ServicePath" -w /go/src/$ServicePath $buildContainer ./build/build.sh || { echo 'build failed' ; exit 1; }
 
 # build the docker container with the new binary
 docker build -t $ServiceName .
@@ -77,7 +79,7 @@ fi
 
 # run the migrations
 echo "Running migrations on postgres: $DBName:$DbPublicPort"
-docker run --rm -ti -v $CurrentDir/build/migration:/migration $ServiceName-migrate /migrate -url "postgres://postgres:password@$DBName:$DbPublicPort/$ServiceName?sslmode=disable" -path /migration up
+docker run --rm -ti $ServiceName-migrate -url "postgres://postgres:password@$DBName:$DbPublicPort/$ServiceName?sslmode=disable" -path /migration up
 
 
 # Use the services location env provided by the host file if it exists
