@@ -11,7 +11,7 @@ import (
 
 // config keys
 const (
-	configKeyEnvironment = "HMD_ENVIRONMENT"
+	configKeyEnvironment = "AT_ENVIRONMENT"
 )
 
 func main() {
