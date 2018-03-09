@@ -63,7 +63,7 @@ running=$(docker ps -q -f "name=$DBName" -f "status=running" )
 if [ "$running" == "" ]
   then
   docker rm $DBName &>/dev/null
-  docker run --name $DBName -e POSTGRES_PASSWORD=password -e POSTGRES_DB=$ServiceName -P -d postgres
+  docker run --name $DBName -e POSTGRES_PASSWORD=password -e POSTGRES_DB=$ServiceName -P -d postgres:9.6
   sleep 10
 fi
 
