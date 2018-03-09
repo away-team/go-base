@@ -68,7 +68,7 @@ if [ "$running" == "" ]
 fi
 
 # Detect DB ip:port
-DbPublicPort=`docker ps | grep $DBName | cut -d : -f2 | cut -d - -f1`
+DbPublicPort=`docker ps | grep $DBName | cut -d : -f3 | cut -d - -f1`
 # register db on the host ip:port for the service and test.sh
 resp=$(curl -s -o /dev/null -w "%{http_code}" -X PUT -d '{"Datacenter": "vagrant", "Node": "dev-db", "Address": "'$HostIP'", "Service": {"Service": "'$DBName'", "Address": "'$HostIP'", "Tags": ["dev"], "Port": '$DbPublicPort'}}' http://$HostIP:8500/v1/catalog/register)
 if [ "$resp" != "200" ]
