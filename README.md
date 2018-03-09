@@ -10,7 +10,7 @@ A base service to start new services from
 * Push
 
 ```sh
-git clone git@github.com:healthimation/go-base.git new-service
+git clone git@github.com:away-team/go-base.git new-service
 cd new-service
 sh init.sh <serviceName>
 
