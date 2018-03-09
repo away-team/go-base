@@ -12,9 +12,9 @@ import (
 
 // config keys
 const (
-	configKeyDBUser     = "HMD_DB_USER"
-	configKeyDBPassword = "HMD_DB_PASSWORD"
-	configKeyUseCORS    = "HMD_USE_CORS"
+	configKeyDBUser     = "AT_DB_USER"
+	configKeyDBPassword = "AT_DB_PASSWORD"
+	configKeyUseCORS    = "AT_USE_CORS"
 )
 
 // DefaultServiceName is used in 99% of cases
