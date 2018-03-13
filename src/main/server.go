@@ -27,7 +27,7 @@ func main() {
 		log.Fatalf("Couldnt initialize config: %v", err)
 	}
 
-	b := balancer.NewEnvBalancer("PGHOST", "PGPORT", "HMD", "URL")
+	b := balancer.NewEnvBalancer("PGHOST", "PGPORT", "AT", "URL")
 	svr := <serviceName>.NewServer(env, <serviceName>.DefaultServiceName, conf, b)
 
 	// Start up the server
