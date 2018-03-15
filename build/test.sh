@@ -16,30 +16,9 @@ while getopts ":vr:" opt; do
   esac
 done
 
-export SERVICE_NAME=$ServiceName
-
-# default consul
-if [ ! -n "${CONSUL_HTTP_ADDR+1}" ]; then
-  echo "Defaulting CONSUL_HTTP_ADDR to 172.17.8.101:8500"
-  export CONSUL_HTTP_ADDR=172.17.8.101:8500
-fi
-
-# lookup db host
-if [ ! -n "${DATABASE_HOST+1}" ]; then
-  dbport=`curl --silent -X GET $CONSUL_HTTP_ADDR/v1/catalog/service/$ServiceName-db?tag=dev | cut -d : -f8 | cut -d , -f1`
-  echo "Defaulting DATABASE_HOST based on consul lookup: 172.17.8.101:$dbport"
-  export DATABASE_HOST="172.17.8.101:$dbport"
-fi
-
-
-# default service host
-if [ ! -n "${SERVICE_HOST+1}" ]; then
-  echo "Defaulting SERVICE_HOST to: 172.17.8.101:8080"
-  export SERVICE_HOST=172.17.8.101:8080
-fi
 
 # find all go packages
-packages="$(find src -type f -name "*.go" -exec dirname {} \; | sort | uniq)"
+packages="$(find src -type f -name "*.go" -exec dirname {} \; | grep -v mock_ | sort | uniq)"
 
 lintRet=0
 vetRet=0
