@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/divideandconquer/go-consul-client/src/balancer"
@@ -29,7 +30,7 @@ func (f factory) Get() (Database, error) {
 		return nil, err
 	}
 
-	db, err := NewDb("postgres", fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", f.dbUser, f.dbPass, dbLoc.URL, dbLoc.Port, f.serviceName))
+	db, err := NewDb("postgres", fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", f.dbUser, url.QueryEscape(f.dbPass), dbLoc.URL, dbLoc.Port, f.serviceName))
 	if err != nil {
 		f.log.Printf("Error connecting to db: %v", err)
 		return nil, err
