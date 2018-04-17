@@ -63,32 +63,15 @@ running=$(docker ps -q -f "name=$DBName" -f "status=running" )
 if [ "$running" == "" ]
   then
   docker rm $DBName &>/dev/null
-  docker run --name $DBName -e POSTGRES_PASSWORD=password -e POSTGRES_DB=$ServiceName -P -d postgres:9.6
+  docker run --name $DBName -e SERVICE_NAME=$DBName -e POSTGRES_PASSWORD=password -e POSTGRES_DB=$ServiceName -P -d postgres:9.6
   sleep 10
 fi
 
-# Detect DB ip:port
-DbPublicPort=`docker ps | grep $DBName | cut -d : -f3 | cut -d - -f1`
-# register db on the host ip:port for the service and test.sh
-resp=$(curl -s -o /dev/null -w "%{http_code}" -X PUT -d '{"Datacenter": "vagrant", "Node": "dev-db", "Address": "'$HostIP'", "Service": {"Service": "'$DBName'", "Address": "'$HostIP'", "Tags": ["dev"], "Port": '$DbPublicPort'}}' http://$HostIP:8500/v1/catalog/register)
-if [ "$resp" != "200" ]
-then
-  echo "Non-200 response adding DB to Consul ($resp)"
-  exit 1
-fi
-
 # run the migrations
-echo "Running migrations on postgres: $DBName:$DbPublicPort"
-docker run --rm -ti $ServiceName-migrate -url "postgres://postgres:password@$DBName:$DbPublicPort/$ServiceName?sslmode=disable" -path /migration up
+DBPort=5432
+echo "Running migrations on postgres: $DBName:$DBPort"
+docker run --rm -ti $ServiceName-migrate -url "postgres://postgres:password@$DBName:$DbPort/$ServiceName?sslmode=disable" -path /migration up
 
-
-# Use the services location env provided by the host file if it exists
-useServicesEnv="--env-file /etc/services.env"
-if [ ! -f "/etc/services.env" ];
-then
-  echo "Warning! /etc/services.env not found, service to service communication may not work as expected."
-  useServicesEnv=""
-fi
 
 # run the container
-docker run --rm -it -p $port:8080 -e PGHOST=$DBName -e PGPORT=$DbPublicPort --env-file $EnvFile $IncludeSecret $useServicesEnv -e SERVICE_NAME=$ServiceName $ServiceName
+docker run --rm -it -p $port:8080 --env-file $EnvFile $IncludeSecret -e SERVICE_NAME=$ServiceName $ServiceName
