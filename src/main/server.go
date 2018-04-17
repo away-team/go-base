@@ -12,6 +12,7 @@ import (
 // config keys
 const (
 	configKeyEnvironment = "AT_ENVIRONMENT"
+	configKeyServiceMap  = "AT_SERVICE_MAP"
 )
 
 func main() {
@@ -27,7 +28,17 @@ func main() {
 		log.Fatalf("Couldnt initialize config: %v", err)
 	}
 
-	b := balancer.NewEnvBalancer("PGHOST", "PGPORT", "AT", "URL")
+	var serviceMap map[string]string
+	serviceMapBy, err := conf.Get(configKeyServiceMap)
+	if err != nil {
+		log.Fatalf("Could not find config for %s", configKeyServiceMap)
+	}
+	err = json.Unmarshal(serviceMapBy, &serviceMap)
+	if err != nil {
+		log.Fatalf("Error decoding %s config %s", configKeyServiceMap, err.Error())
+	}
+
+	b := balancer.NewMapBalancer(serviceMap)
 	svr := <serviceName>.NewServer(env, <serviceName>.DefaultServiceName, conf, b)
 
 	// Start up the server
