@@ -1,12 +1,19 @@
 #!/bin/bash
 
+set -e
+
 #### Config Vars ####
 # update these to reflect your service
 source `pwd`/build/vars.sh
 BasePath="/home/core/dev/"
 port="8080"
 dbPort="5432"
-buildContainer="golang:1.9.4"
+buildContainer="golang:1.10"
+networkName="internal"
+# the local config file to push in to the config store
+localConfigFile="$(pwd)/config/local.json"
+# enable/disable config push with -c
+pushConfig=true
 
 # The config env file to pass to docker run
 EnvFile="`pwd`/config/dev.env"
@@ -34,11 +41,15 @@ then
 fi
 
 #handle args
-while getopts ":p:" opt; do
+while getopts ":p:c" opt; do
   case $opt in
     p)
       port=$OPTARG
       echo "port overridden to $port"
+      ;;
+    c)
+      pushConfig=false
+      echo "Config push disabled"
       ;;
   esac
 done
@@ -55,6 +66,13 @@ docker run --rm -it -v `pwd`:"/go/src/$ServicePath" -w /go/src/$ServicePath $bui
 docker build -t $ServiceName .
 docker build -t $ServiceName-migrate -f Dockerfile.migrate .
 
+# If a user defined docker network does not exist, create it
+networkExists=$(docker network ls -q -f "name=$networkName")
+if [ "$networkExists" == "" ]
+then
+  echo "Creating network: $networkName"
+  docker network create -d bridge $networkName
+fi
 
 # run the DB container
 DBName="$ServiceName-db"
@@ -62,16 +80,24 @@ DBName="$ServiceName-db"
 running=$(docker ps -q -f "name=$DBName" -f "status=running" )
 if [ "$running" == "" ]
   then
-  docker rm $DBName &>/dev/null
-  docker run --name $DBName -e SERVICE_NAME=$DBName -e POSTGRES_PASSWORD=password -e POSTGRES_DB=$ServiceName -P -d postgres:9.6
+  docker rm $DBName &>/dev/null || true
+  docker run --network $networkName --name $DBName -e POSTGRES_PASSWORD=password -e POSTGRES_DB=$ServiceName -P -d postgres:9.6
   sleep 10
 fi
 
 # run the migrations
 DBPort=5432
 echo "Running migrations on postgres: $DBName:$DBPort"
-docker run --rm -ti $ServiceName-migrate -url "postgres://postgres:password@$DBName:$DbPort/$ServiceName?sslmode=disable" -path /migration up
+docker run --rm --network $networkName -ti $ServiceName-migrate -url "postgres://postgres:password@$DBName:$DbPort/$ServiceName?sslmode=disable" -path /migration up
 
+# update parameter store config
+if [ "$pushConfig" ] && [ -f "$localConfigFile" ]
+then
+  echo "Pushing config"
+  docker run -ti --rm -v $localConfigFile:/config/local.json $IncludeSecret healthimation/go-aws-config -file /config/local.json -env $EnvironmentName -service $ServiceName
+else
+  echo "$localConfigFile not found, skipping config push"
+fi
 
 # run the container
-docker run --rm -it -p $port:8080 --env-file $EnvFile $IncludeSecret -e SERVICE_NAME=$ServiceName $ServiceName
+docker run --rm --network $networkName -it -p $port:8080 --env-file $EnvFile $IncludeSecret $ServiceName
