@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/healthimation/go-aws-config/src/awsconfig"
-	"github.com/healthimation/go-env-config/src/balancer"
+	"github.com/divideandconquer/go-consul-client/src/balancer"
 )
 
 // config keys
