@@ -12,6 +12,7 @@ import (
 // config keys
 const (
 	configKeyEnvironment = "ENVIRONMENT"
+	configKeyServiceMap = "SERVICE_MAP"
 )
 
 func main() {
