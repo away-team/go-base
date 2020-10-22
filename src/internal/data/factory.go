@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/divideandconquer/go-consul-client/src/balancer"
+	"github.com/sirupsen/logrus"
 )
 
 // Factory can get a DB

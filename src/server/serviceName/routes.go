@@ -12,9 +12,9 @@ import (
 
 // config keys
 const (
-	configKeyDBUser     = "AT_DB_USER"
-	configKeyDBPassword = "AT_DB_PASSWORD"
-	configKeyUseCORS    = "AT_USE_CORS"
+	configKeyDBUser     = "DB_USER"
+	configKeyDBPassword = "DB_PASSWORD"
+	configKeyUseCORS    = "USE_CORS"
 )
 
 // DefaultServiceName is used in 99% of cases

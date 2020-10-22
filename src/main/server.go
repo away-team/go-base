@@ -5,14 +5,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/healthimation/go-aws-config/src/awsconfig"
 	"github.com/divideandconquer/go-consul-client/src/balancer"
+	"github.com/divideandconquer/go-consul-client/src/config"
 )
 
 // config keys
 const (
-	configKeyEnvironment = "AT_ENVIRONMENT"
-	configKeyServiceMap  = "AT_SERVICE_MAP"
+	configKeyEnvironment = "ENVIRONMENT"
 )
 
 func main() {
@@ -21,13 +20,15 @@ func main() {
 	if len(env) == 0 {
 		log.Fatal("environment not set")
 	}
-	// use the default service name to load config
-	conf := awsconfig.NewAWSLoader(env, <serviceName>.DefaultServiceName)
-	err := conf.Initialize()
+
+	//Setup config loader implementation
+	//TODO switch to a real config loader.
+	conf, err := config.NewMappedLoader([]byte(`{"SERVICE_MAP":{},"USE_CORS":true,"DB_USER":"postgres","DB_PASSWORD":"password"}`))
 	if err != nil {
-		log.Fatalf("Couldnt initialize config: %v", err)
+		log.Fatalf("Error parsing config: %v", err)
 	}
 
+	// Setup balancer implementation
 	var serviceMap map[string]string
 	serviceMapBy, err := conf.Get(configKeyServiceMap)
 	if err != nil {
@@ -37,8 +38,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error decoding %s config %s", configKeyServiceMap, err.Error())
 	}
-
 	b := balancer.NewMapBalancer(serviceMap)
+
 	svr := <serviceName>.NewServer(env, <serviceName>.DefaultServiceName, conf, b)
 
 	// Start up the server
