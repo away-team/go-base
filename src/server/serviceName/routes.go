@@ -12,9 +12,9 @@ import (
 
 // config keys
 const (
-	configKeyDBUser     = "AT_DB_USER"
-	configKeyDBPassword = "AT_DB_PASSWORD"
-	configKeyUseCORS    = "AT_USE_CORS"
+	configKeyDBUser     = "DB_USER"
+	configKeyDBPassword = "DB_PASSWORD"
+	configKeyUseCORS    = "USE_CORS"
 )
 
 // DefaultServiceName is used in 99% of cases
@@ -44,6 +44,7 @@ func (s *server) init() {
 
 	//initialize the db
 	dbFactory := data.GetDBFactory(s.balancer, dbUser, dbPass, s.serviceName, log)
+	_ = dbFactory // TODO remove this line once you are using for real
 
 	// To track timer metrics setup and pass in a timer instead of nil
 	b := chain.NewBase(alice.New(), nil, middleware.NewLogrusLogger(log, true))

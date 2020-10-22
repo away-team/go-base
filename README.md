@@ -14,8 +14,11 @@ git clone git@github.com:away-team/go-base.git new-service
 cd new-service
 sh init.sh <serviceName>
 
-# govendor init
-# govendor update +external
+# go mod init github.com/<org>/<repo>
+# go mod tidy
+# go mod vendor
+# goimports -w src/main/
+# goimports -w src/server/
 
 git remote set-url origin git://new.url.here
 git add *

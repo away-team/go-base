@@ -8,7 +8,7 @@ source `pwd`/build/vars.sh
 BasePath="/home/core/dev/"
 port="8080"
 dbPort="5432"
-buildContainer="golang:1.10"
+buildContainer="golang:1.15"
 networkName="internal"
 # the local config file to push in to the config store
 localConfigFile="$(pwd)/config/local.json"
@@ -31,7 +31,7 @@ then
 fi
 
 # Default to using the ip of eth1 as the "externally reachable" interface
-HostIP=$(ip -4 add show eth1 |grep inet | cut -d ' ' -f6 | cut -d '/' -f1)
+HostIP="localhost"
 # Use CoreOS injected vars if they are available
 MetaDataFile="/run/metadata/coreos"
 if [ -f $MetaDataFile ];
