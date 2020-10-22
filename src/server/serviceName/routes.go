@@ -44,6 +44,7 @@ func (s *server) init() {
 
 	//initialize the db
 	dbFactory := data.GetDBFactory(s.balancer, dbUser, dbPass, s.serviceName, log)
+	_ = dbFactory // TODO remove this line once you are using for real
 
 	// To track timer metrics setup and pass in a timer instead of nil
 	b := chain.NewBase(alice.New(), nil, middleware.NewLogrusLogger(log, true))
