@@ -6,6 +6,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 
 echo "replacing <serviceName> with $1..."
 find $DIR/build -type f -name '*.sh' -print0 | xargs -0 sed -i '' "s/<serviceName>/$1/g"
+find $DIR/config -type f -name '*.env' -print0 | xargs -0 sed -i '' "s/<serviceName>/$1/g"
 find $DIR/src/main -type f -name '*.go' -print0 | xargs -0  sed -i '' "s/<serviceName>/$1/g" 
 find $DIR/src/server/serviceName -type f -name '*.go' -print0 | xargs -0  sed -i '' "s/<serviceName>/$1/g" 
 find $DIR/src/serviceName -type f -name '*.go' -print0 | xargs -0  sed -i '' "s/<serviceName>/$1/g" 
