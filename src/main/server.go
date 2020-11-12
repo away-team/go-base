@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/divideandconquer/go-consul-client/src/balancer"
-	"github.com/divideandconquer/go-consul-client/src/config"
+	"github.com/healthimation/go-env-config/src/client"
 )
 
 // config keys
@@ -22,12 +22,8 @@ func main() {
 		log.Fatal("environment not set")
 	}
 
-	//Setup config loader implementation
-	//TODO switch to a real config loader.
-	conf, err := config.NewMappedLoader([]byte(`{"SERVICE_MAP":{},"USE_CORS":true,"DB_USER":"postgres","DB_PASSWORD":"password"}`))
-	if err != nil {
-		log.Fatalf("Error parsing config: %v", err)
-	}
+	//Setup ENV config loader implementation
+	conf := client.NewEnvLoader()
 
 	// Setup balancer implementation
 	var serviceMap map[string]string
