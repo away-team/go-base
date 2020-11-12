@@ -58,6 +58,10 @@ done
 CurrentDir=`pwd`
 ServicePath="${CurrentDir/$BasePath/}"
 
+# running go mod
+echo "vendoring packages..."
+go mod vendor
+
 # run the build
 echo "Building service"
 docker run --rm -it -v `pwd`:"/go/src/$ServicePath" -w /go/src/$ServicePath $buildContainer ./build/build.sh || { echo 'build failed' ; exit 1; }
@@ -81,7 +85,7 @@ running=$(docker ps -q -f "name=$DBName" -f "status=running" )
 if [ "$running" == "" ]
   then
   docker rm $DBName &>/dev/null || true
-  docker run --network $networkName --name $DBName -e POSTGRES_PASSWORD=password -e POSTGRES_DB=$ServiceName -P -d postgres:9.6
+  docker run --network $networkName --name $DBName -e POSTGRES_PASSWORD=password -e POSTGRES_DB=$ServiceName -P -d postgres:10.5
   sleep 10
 fi
 
