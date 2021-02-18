@@ -9,6 +9,8 @@ import (
 	"github.com/healthimation/go-glitch/postgres"
 )
 
+//go:generate go run -mod=mod github.com/golang/mock/mockgen -package databasemock -destination=./databasemock/mock_database.go -source=../data/database.go -build_flags=-mod=mod
+
 // Database is an interface to the data store
 type Database interface {
 	// ClearTestData will clear out test data
