@@ -3,18 +3,18 @@ package test
 import (
 	"net/http"
 
-	"github.com/healthimation/go-service/alice/middleware"
-	"github.com/healthimation/go-service/service"
+	"github.com/HqOapp/go-service/alice/middleware"
+	"github.com/HqOapp/go-service/service"
 )
 
-type pong struct {
+type PongResponse struct {
 	Message string `json:"message"`
 }
 
 // Ping returns a ping handler
 func Ping() http.Handler {
 	return middleware.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
-		ret := pong{Message: "pong!"}
+		ret := PongResponse{Message: "pong!"}
 		return service.WriteJSONResponse(w, http.StatusOK, ret)
 	})
 }

@@ -1,12 +1,18 @@
+//go:generate swagger generate spec -o ../../doc/swagger/v1/swagger.json --scan-models
+
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/divideandconquer/go-consul-client/src/balancer"
 	"github.com/healthimation/go-env-config/src/client"
+
+	"github.com/HqOapp/<serviceName>-service/src/server/<serviceName>"
+	_ "github.com/HqOapp/<serviceName>-service/src/internal/v1/swagger"
 )
 
 // config keys

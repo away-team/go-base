@@ -8,6 +8,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+//go:generate go run -mod=mod github.com/golang/mock/mockgen -package databasemock -destination=./databasemock/mock_factory.go -source=../data/factory.go -build_flags=-mod=mod
+
 // Factory can get a DB
 type Factory interface {
 	Get() (Database, error)

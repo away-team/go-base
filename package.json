@@ -1,0 +1,27 @@
+{
+  "license": "MIT",
+  "scripts": {
+    "devspace:clean": "rm -rf .devspace",
+    "devspace:create": "./scripts/devspace-create.sh",
+    "devspace:deploy": "./scripts/devspace-deploy.sh",
+    "devspace:install": "brew install devspace; devspace add plugin https://github.com/loft-sh/loft-devspace-plugin",
+    "devspace:login": "devspace login https://loft.hqo.dev/",
+    "devspace:restart:local": "yarn devspace:stop:local && yarn devspace:start:local",
+    "devspace:restart": "./scripts/devspace-restart.sh",
+    "devspace:start:local": "devspace dev -p local -n development --kube-context docker-desktop --no-warn",
+    "devspace:start": "./scripts/devspace-start.sh",
+    "devspace:stop:local": "devspace purge -n development --kube-context docker-desktop --no-warn",
+    "devspace:stop": "./scripts/devspace-stop.sh",
+    "devspace:update": "devspace upgrade && devspace update plugin loft"
+  },
+  "devDependencies": {
+    "husky": "4.3.0",
+    "prettier": "2.2.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "./scripts/validate-author-email.sh",
+      "prepare-commit-msg": "./scripts/prepare-commit-msg.sh ${HUSKY_GIT_PARAMS}"
+    }
+  }
+}

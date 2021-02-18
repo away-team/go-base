@@ -1,0 +1,72 @@
+version: v1beta9
+
+## Variables ####################################################################################################
+vars:
+  - name: GITHUB_USER
+    source: env
+  - name: GITHUB_TOKEN
+    source: env
+
+## Deployments ##################################################################################################
+deployments:
+  - name: postgresql
+    helm:
+      chart:
+        name: postgresql
+        repo: https://charts.bitnami.com/bitnami
+      values:
+        fullnameOverride: postgresql
+        postgresqlUsername: postgres
+        postgresqlPassword: password
+        postgresqlDatabase: <serviceName>
+        persistence:
+          enabled: false
+
+## Development ##################################################################################################
+dev:
+  logs:
+    disabled: true
+  ports:
+    - labelSelector:
+        app.kubernetes.io/instance: postgresql
+      forward:
+        - port: 5432
+
+## Profiles #####################################################################################################
+profiles:
+  #
+  # Use this profile when you want to test buildingmaps in kubernetes like production
+  - name: production
+    patches:
+      - op: add
+        path: deployments
+        value:
+          name: <serviceName>-service
+          helm:
+            chart:
+              name: helm/<serviceName>-service
+      - op: add
+        path: dev.ports
+        value:
+          labelSelector:
+            app.kubernetes.io/name: <serviceName>-service
+          forward:
+            - port: 8080
+              remotePort: 80
+
+  #
+  # Use this profile when you want to build the buildingmap image and test in kubernetes
+  - name: build-production
+    parent: production
+    patches:
+      - op: add
+        path: images
+        value:
+          buildingmap-service:
+            image: hqo-docker.jfrog.io/<serviceName>-service
+            build:
+              docker:
+                options:
+                  buildArgs:
+                    GITHUB_USER: ${GITHUB_USER}
+                    GITHUB_TOKEN: ${GITHUB_TOKEN}
