@@ -4,14 +4,16 @@ This repository serves as a template for creating a new service powered by [Go](
 
 ## Using this template
 ### Create a New GitHub Repository for the Service
-When you [create a new repository](https://github.com/new) in GitHub, select `HqOapp/hello-go` in the
-`Repository template` drop-down.
+Create a ticket in [Alpha Team backlog](https://ventureapp.atlassian.net/secure/RapidBoard.jspa?rapidView=125&projectKey=AT&view=planning&selectedIssue=AT-16&issueLimit=100)
+with the label `tech-ops` asking for a new repository called `<my_new_service_name>-service` (ensure the name conforms to
+[Go standards](https://blog.golang.org/package-names)) to be created using this `hello-go` repository as the template.
 
 ![Create new GitHub repo from template](/doc/new-service-repo.png?raw=true "Create new GitHub repo from template")
 
 ### Clone the Repository Locally
+Once the new repository has been created by DevOps, you can clone it locally.
 ```sh
-git clone git@github.com:HqOapp/<my_new_service_name>.git
+git clone git@github.com:HqOapp/<my_new_service_name>-service.git
 ```
 
 ### Initialize the Service
@@ -33,11 +35,11 @@ Make sure to check all the changes into GitHub.
 ```sh
 git add *
 git commit -m "initial clone"
-git push -u origin main
+git push -u origin master
 ```
 
 # <serviceName>-service
-An API for creating White-label releases
+This service does <FILL IN DETAILS HERE>
 
 ## Prerequisites
 Check if Golang is installed
@@ -92,7 +94,7 @@ Start devspace
 yarn devspace:start
 ```
 
-Create secret.env file into the config folder and ask somebody to share its content with you
+You will need to ask a team member for the appropriate content to place in the file `config/secret.env`.
 
 Add private repository path to the go environment
 ```sh

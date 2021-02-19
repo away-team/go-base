@@ -26,8 +26,11 @@ mv "$DIR/src/serviceName" "$DIR/src/$1"
 echo "Initializing Go modules for $1..."
 go mod init "github.com/HqOapp/$1-service"
 
+echo "Creating empty secret.env file..."
+touch "$DIR/config/secret.env"
+
 echo "Creating Swagger documentation directory..."
-mkdir -p ./doc/swagger/v1
+mkdir -p "$DIR/doc/swagger/v1"
 
 printf "\nFinished.  Don't forget to remove this script update the README.md.\n"
 

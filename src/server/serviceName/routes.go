@@ -6,15 +6,9 @@ import (
 	"github.com/divideandconquer/go-consul-client/src/balancer"
 	"github.com/divideandconquer/go-consul-client/src/config"
 	"github.com/husobee/vestigo"
-	"github.com/justinas/alice"
 
-	"github.com/HqOapp/<serviceName>-service/src/internal/data"
-	"github.com/HqOapp/<serviceName>-service/src/internal/v1/test"
-	"github.com/HqOapp/go-service/alice/middleware/jwtdecode"
 	"github.com/HqOapp/go-auth/validation"
 	"github.com/HqOapp/go-service/alice/chain"
-	"github.com/HqOapp/go-service/alice/middleware"
-	"github.com/HqOapp/go-service/alice/middleware/trace"
 	"github.com/HqOapp/go-service/service"
 )
 

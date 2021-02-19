@@ -8,7 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/HqOapp/foo-service/src/internal/data"
+	"github.com/HqOapp/<serviceName>-service/src/internal/data"
 	"github.com/HqOapp/go-service/alice/middleware"
 )
 
