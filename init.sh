@@ -18,6 +18,7 @@ find "$DIR/src/internal" -type f -name '*.go' -print0 | xargs -0 sed -i '' "s/<s
 find "$DIR/src/serviceName" -type f -name '*.go' -print0 | xargs -0 sed -i '' "s/<serviceName>/$1/g"
 sed -i '' "s/<serviceName>/$1/g" README.md
 sed -i '' "s/<serviceName>/$1/g" devspace.yaml
+sed -i '' "s/<serviceName>/$1/g" "$DIR/.circleci/config.yml"
 
 echo "Moving serviceName directories..."
 mv "$DIR/src/server/serviceName" "$DIR/src/server/$1"

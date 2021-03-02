@@ -1,0 +1,71 @@
+version: 2.1
+executors:
+  buildpack-deps:
+    docker:
+      - image: circleci/buildpack-deps
+  golang-latest:
+    docker:
+      - image: circleci/golang:latest
+
+orbs:
+  helm: circleci/helm@1.1.2
+  shellcheck: circleci/shellcheck@2.0.0
+  artifactory: circleci/artifactory@1.0.0
+
+jobs:
+  validate_scripts:
+    executor: buildpack-deps
+    steps:
+      - checkout
+      - shellcheck/install
+      - shellcheck/check:
+          dir: ./scripts
+
+  run-unit-tests:
+    executor: golang-latest
+    steps:
+      - checkout
+      - add_ssh_keys
+      - run:
+          name: Run unit tests
+          command: |
+            go env -w GOPRIVATE="github.com/HqOapp"
+            go mod vendor
+            go test -run TestUnit ./...
+
+  build_and_push_image:
+    executor: buildpack-deps
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - artifactory/install
+      - artifactory/docker-login:
+          artifactory-key: ARTIFACTORY_APIKEY
+          docker-registry: hqo-docker.jfrog.io
+      - run:
+          name: Build & Tag Users Service Image
+          command: docker build -t hqo-docker.jfrog.io/<serviceName>-service:$CIRCLE_SHA1 -t hqo-docker.jfrog.io/<serviceName>-service:latest --build-arg GITHUB_USER=${GITHUB_USER} --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} .
+      - run:
+          name: Publish <serviceName>-service image with commit hash tag
+          command: docker push hqo-docker.jfrog.io/<serviceName>-service:$CIRCLE_SHA1
+      - when: # master branch
+          condition:
+            equal: [master, << pipeline.git.branch >>]
+          steps:
+            - run:
+                name: Publish latest <serviceName>-service image
+                command: docker push hqo-docker.jfrog.io/<serviceName>-service:latest
+workflows:
+  version: 2
+  on-commit:
+    jobs:
+      - validate_scripts
+      - run-unit-tests
+      - build_and_push_image:
+          context:
+            - artifactory
+            - github
+          requires:
+            - validate_scripts
+            - run-unit-tests

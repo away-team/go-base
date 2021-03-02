@@ -14,16 +14,29 @@ bin
 
 # Dependency directories
 vendor
-node_modules
 
 # Environment specific configuration
 secret.env
 
-# IDE / project configuration
-.vscode
-!.vscode/settings.json
-.idea
-.devspace
-
-# macOS
+# OS
 .DS_Store
+*.env
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Ignore DevSpace cache and log folder
+.devspace/
