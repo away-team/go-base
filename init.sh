@@ -16,6 +16,7 @@ find "$DIR/src/main" -type f -name '*.go' -print0 | xargs -0 sed -i '' "s/<servi
 find "$DIR/src/server/serviceName" -type f -name '*.go' -print0 | xargs -0 sed -i '' "s/<serviceName>/$1/g"
 find "$DIR/src/internal" -type f -name '*.go' -print0 | xargs -0 sed -i '' "s/<serviceName>/$1/g"
 find "$DIR/src/serviceName" -type f -name '*.go' -print0 | xargs -0 sed -i '' "s/<serviceName>/$1/g"
+find "$DIR/doc" -type f -name '*.md' -print0 | xargs -0 sed -i '' "s/<serviceName>/$1/g"
 sed -i '' "s/<serviceName>/$1/g" README.md
 sed -i '' "s/<serviceName>/$1/g" devspace.yaml
 sed -i '' "s/<serviceName>/$1/g" "$DIR/.circleci/config.yml"

@@ -41,166 +41,131 @@ git push -u origin master
 # <serviceName>-service
 This service does <FILL IN DETAILS HERE>
 
-## Prerequisites
-Check if Golang is installed
-```sh
-go version
-```
-
-Install Golang if necessary
-```sh
-brew install go
-```
-other installation ways are described [here](https://golang.org/doc/install)
-
-Install PgAdmin PostgresSQL administration tool
-```sh
-brew install --cask pgadmin4
-```
-
-Check if NodeJS is installed
-```sh
-node --version
-```
-
-Install Nodejs if necessary
-```sh
-brew install node
-```
-
-Install yarn package manager
-```sh
-brew install yarn
-```
+## Table of Contents
+* [Getting Started](#getting-started)
+  * [Development Environment Setup](#development-environment-setup)
+  * [Clone and Configure the Service](#clone-and-configure-the-service)
+* [Using the Service](#using-the-service)
+  * [Start the Database](#start-the-database)
+  * [Start the Service](#start-the-service)
+  * [Start the Swagger UI](#start-the-swagger-ui)
+  * [Stop the Service, Database, and Swagger UI](#stop-the-service-database-and-swagger-ui)
+* [Development Resources](#development-resources)
 
 ## Getting Started
-Clone repo
-```sh
-git clone git@github.com:HqOapp/<serviceName>-service.git
-```
+### Development Environment Setup
+You will need to have the following tools installed on your local environment:
+* [Go](https://golang.org/)
+* [node.js](https://nodejs.org/)
+* [yarn](https://yarnpkg.com/)
+* [curl](https://curl.se/)
+* [go-swagger](https://goswagger.io/)
 
-Go to the project folder
-```sh
-cd <serviceName>-service
-```
-
-Login to devspace
-```sh
-yarn devspace:login
-```
-
-Start devspace
-```sh
-yarn devspace:start
-```
-
-You will need to ask a team member for the appropriate content to place in the file `config/secret.env`.
-
-Add private repository path to the go environment
-```sh
-go env -w GOPRIVATE="github.com/HqOapp"
-```
-
-Run database migrations and start <serviceName> in different terminal session
-```sh
-build/migrate.sh
-build/run.sh
-```
-
-## Start <serviceName>-service on a public URI
-To start <serviceName>-service on a public URI, run the following commands:  
-`yarn devspace:deploy production`
-
-This starts <serviceName>-service using the master branch and makes it available at `https://<your-github-username>-<serviceName>-service.gloo.hqo.dev`.
-
-To start <serviceName>-service from a specific branch do the following:  
-`DOCKER_TAG=<githash for the branch> yarn devspace:deploy production`
-
-Example: https://john-doe-<serviceName>-service.gloo.hqo.dev
-
-**NOTE**: make sure you stop the service when it is no longer needed.
-
-`yarn devspace:stop`
-
-## Using Swagger
-Install go-swagger
-
-```
+You can quickly install all of these tools via [Homebrew](https://brew.sh/) on macOS.
+```shell
+brew install go
+brew install node
+brew install yarn
+brew install curl
 brew tap go-swagger/go-swagger
 brew install go-swagger
 ```
 
-Update vendor folder
-```
-go mod vendor
-```
-
-Generate Swagger Docs by running the following command in <serviceName>-service's root
-```
-make swagger
+Once Go is installed, add HqO's private repository path to the Go environment.
+```shell
+go env -w GOPRIVATE="github.com/HqOapp"
 ```
 
-Start Swagger UI by running the following command in <serviceName>-service's root
+Login to [DevSpace](https://devspace.cloud/) to ensure you can bring up the service's resources.
+```shell
+yarn devspace:login
 ```
-make serve-swagger
+
+The team recommends using [pgAdmin](https://www.pgadmin.org/) to connect to your development database instance, but any
+database client will work.
+```shell
+brew install --cask pgadmin4
 ```
-NOTE: These commands are in <root>/makefile. Using makefile is temporary until we find a better solution.
 
-## Adding Swagger documentation
-Refer to [goswagger's documentation for tag information](https://goswaggerio/use/spec.html)
+### Clone and Configure the Service
+Clone the service locally.
+```shell
+git clone git@github.com:HqOapp/<serviceName>-service.git
+cd <serviceName>-service
+```
 
-To add documentation for an endpoint, do the following:
-1. create a matching GO file in <root>/src/internal/v1/swagger (ex: branches.go)
-2. Fill in Swagger meta information describing the endpoint
-3. Generate the documentation by running ```make swagger```
-4. Start Swagger UI by running ```make serve-swagger```
-5. Test the endpoint reference in Swagger UI to verify the endpoint documentation is configured correctly
+Install the node.js based dependencies.
+```shell
+yarn install
+```
 
-## Project Structure
-### Database Migrations
-Database migrations are placed in the `build/migration/` directory. Migration files are divided into two categories:
-migrations only run once and migrations run every time the service is brought up. The files follow these naming
-conventions.
+Create a `secret.env` file in the `/config` directory.
+```shell
+touch config/secret.env
+```
 
-Single run migration files are
-- prefixed with a numeric string beginning at `0001_` followed by an underscore with each file incrementing the numeric
-  prefix
-- suffixed with the extension `.up.sql` or `.down.sql`
+The file should contain the following key / value pairs. Ask a team member for the appropriate values to use.
+```yaml
+JWT_SECRET='"<JWT token here>"'
+GITHUB_AUTH_TOKEN='"fake"'
+SERVICE_MAP='{"<serviceName>-db":"127.0.0.1:5432"}'
+DB_USER='"<db username here>"'
+DB_PASSWORD='"<db password here>"'
+LOG_LEVEL=7
+USE_CORS=true
+ENVIRONMENT=local
+```
 
-**Examples:** `0001_people.up.sql`, `0001_people.down.sql`, `0002_companies.up.sql`
+## Using the Service
+### Start the Database
+```shell
+yarn devspace:start
+```
 
-Always run migration files are
-- prefixed with a numeric string beginning at `10002_` followed by an underscore with each file incrementing the numeric
-  prefix
-- suffixed with the extension `.alwauysup.sql`
+Once your instance is running, you can connect to it using your preferred SQL client. The server name to use is
+`localhost`. The username and password for connecting are the same you used in your `secret.env` file.
 
-**Examples:** `10002_get_people.alwaysup.sql`, `10003_delete_companies.alwaysup.sql`
+### Start the Service
+You will need to open a separate terminal window to run the database migrations and start the service.
+```shell
+build/migrate.sh && build/run.sh
+```
 
-### Service Code
-#### Service Runner
-When the service is run, the `/src/main/server.go` file is used as the execution entry point. You should seldom need
-to alter this file.
+The service will be available at `http://localhost:8080/`. You can verify it is responding by hitting the heartbeat
+endpoint.
+```shell
+curl -sSL http://localhost:8080/v1/test/ping
+```
 
-#### Defining Service Routes
-All routes are defined in `/src/server/<my_new_service_name>/routes.go`. Refer to the [vestigo](https://github.com/husobee/vestigo)
-documentation for more information.
+You should receive the following in response.
+```json
+{"message":"pong!"}
+```
 
-#### Database Layer
-Code to query the database goes into `/src/internal/data/database.go` with corresponding unit tests in
-`/src/internal/data/database_test.go`.
+### Start the Swagger UI
+We use [Swagger](https://swagger.io/) to document the service's API. The `go-swagger` module allows us to bring up a
+local version of the Swagger documentation UI. This UI allows us to test our endpoints. Open up a third terminal window
+and build the Swagger documentation.
+```shell
+yarn swagger:build
+```
 
-#### Route Handlers
-Code to handle the routes your service provides goes into `/src/internal/v1/`. This directory will contain sub-directories
-named after the path of your route. Each sub-directory will contain a Go file for the various actions the route responds to.
-As an example, this template contains a `/src/internal/v1/test/ping.go` file to handle the route `/<my_new_service_name>/v1/test/ping`.
+Now, you can start up the Swagger UI.
+```shell
+yarn swagger:serve
+```
 
-#### Service Client
-The service client is a package other services can import to make calls to your service. The routes you choose
-to expose have methods in `/src/<my_new_service_name>/client.go`.
+This will bring up the UI in a page, typically the URL `http://localhost:58913/docs`, within your default web browser.
 
-#### Error Codes / Messages
-Database specific error codes and messages are defined in `/src/internal/data/errors.go`. All other error codes and
-messages are defined in `/src/<my_new_service_name>/errors.go`.
+### Stop the Service, Database, and Swagger UI
+You can `Ctrl-C` out of the running processes for the service, database, and Swagger. This will bring down the service
+itself but leave the database instance running on DevSpace. You should always tear down the database in DevSpace, when
+you no longer need it.
+```shell
+yarn devspace:stop
+```
 
-#### Request, Response, and Other Structures
-All other structures are typically defined in `/src/<my_new_service_name>/`.
+## Development Resources
+* [Project Structure](doc/project_structure.md)
+* [Adding Swagger Documentation](doc/swagger.md)
+* [Start the service on a public URI](doc/public_uri.md)

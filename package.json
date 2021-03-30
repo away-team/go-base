@@ -12,7 +12,10 @@
     "devspace:start": "./scripts/devspace-start.sh",
     "devspace:stop:local": "devspace purge -n development --kube-context docker-desktop --no-warn",
     "devspace:stop": "./scripts/devspace-stop.sh",
-    "devspace:update": "devspace upgrade && devspace update plugin loft"
+    "devspace:update": "devspace upgrade && devspace update plugin loft",
+    "swagger:check": "which swagger || (GO111MODULE=off go get -u github.com/go-swagger/go-swagger/cmd/swagger)",
+    "swagger:build": "go mod vendor && swagger generate spec -o ./doc/swagger/v1/swagger.json --scan-models",
+    "swagger:serve": "swagger serve -F=swagger ./doc/swagger/v1/swagger.json"
   },
   "devDependencies": {
     "husky": "4.3.0",
