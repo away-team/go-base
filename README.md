@@ -50,6 +50,8 @@ This service does <FILL IN DETAILS HERE>
   * [Start the Service](#start-the-service)
   * [Start the Swagger UI](#start-the-swagger-ui)
   * [Stop the Service, Database, and Swagger UI](#stop-the-service-database-and-swagger-ui)
+* [Running Tests](#running-tests)
+* [Running Code Correctness Tools](#running-code-correctnes-tools)
 * [Development Resources](#development-resources)
 
 ## Getting Started
@@ -163,6 +165,34 @@ itself but leave the database instance running on DevSpace. You should always te
 you no longer need it.
 ```shell
 yarn devspace:stop
+```
+
+## Running Tests
+You can run all unit, integration, and functional tests. The verbose mode will display the details of the test cases
+run.
+```shell
+yarn test
+yarn test:verbose
+```
+
+You can also run specific types of tests.
+```shell
+yarn test:unit
+yarn test:unit:verbose
+
+yarn test:integration
+yarn test:integration:verbose
+
+yarn test:functional
+yarn test:functional:verbose
+```
+
+## Running Code Correctness Tools
+Run [golint](https://github.com/golang/lint) and [vet](https://golang.org/pkg/cmd/vet/) the code.
+
+```shell
+yarn lint
+yarn vet
 ```
 
 ## Development Resources
