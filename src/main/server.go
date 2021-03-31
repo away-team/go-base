@@ -5,20 +5,26 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"net"
 	"net/http"
 	"os"
 
 	"github.com/divideandconquer/go-consul-client/src/balancer"
 	"github.com/healthimation/go-env-config/src/client"
+	"github.com/opentracing/opentracing-go"
 
 	"github.com/HqOapp/<serviceName>-service/src/server/<serviceName>"
 	_ "github.com/HqOapp/<serviceName>-service/src/internal/v1/swagger"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/opentracer"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 // config keys
 const (
 	configKeyEnvironment = "ENVIRONMENT"
 	configKeyServiceMap = "SERVICE_MAP"
+	configKeyDataDogAgentHost = "DD_AGENT_HOST"
+	configKeyDataDogAgentPort = "DD_AGENT_PORT"
 )
 
 func main() {
@@ -42,6 +48,26 @@ func main() {
 		log.Fatalf("Error decoding %s config %s", configKeyServiceMap, err.Error())
 	}
 	b := balancer.NewMapBalancer(serviceMap)
+
+	// Setup datadog agent
+	ddAgentHost := os.Getenv(configKeyDataDogAgentHost)
+	if len(ddAgentHost) == 0 {
+		log.Fatal("data dog host not set")
+	}
+
+	ddAgentPort := os.Getenv(configKeyDataDogAgentPort)
+	if len(ddAgentPort) == 0 {
+		log.Fatal("data dog port not set")
+	}
+
+	ddAddr := net.JoinHostPort(
+		ddAgentHost,
+		ddAgentPort,
+	)
+
+	t := opentracer.New(tracer.WithServiceName("<serviceName>"), tracer.WithAnalytics(true), tracer.WithAgentAddr(ddAddr))
+	defer tracer.Stop()
+	opentracing.SetGlobalTracer(t)
 
 	svr := <serviceName>.NewServer(env, <serviceName>.DefaultServiceName, conf, b)
 

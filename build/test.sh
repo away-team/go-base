@@ -20,24 +20,10 @@ done
 # find all go packages
 packages="$(find src -type f -name "*.go" -exec dirname {} \; | grep -v mock_ | sort | uniq)"
 
-lintRet=0
-vetRet=0
 testRet=0
 #loop through packages and test
 for p in $packages
   do
-    # golint if it is installed
-    if golint 2>/dev/null; then
-      echo "linting package $p"
-      golint $p/*.go
-      lintRet=$lintRet+$?
-    fi
-
-    # vet
-    echo "running go vet on $p"
-    go vet $p/*.go
-    vetRet=$vetRet+$?
-
     # test
     echo "Running tests for $p"
 
@@ -52,4 +38,4 @@ for p in $packages
   done
 
 # fail if any of the tests / vet / lint failed
-exit $(($lintRet+$vetRet+$testRet))
+exit $(($testRet))
