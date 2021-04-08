@@ -11,6 +11,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           jira-token: ${{ secrets.JIRA_TOKEN }}
           jira-base-url: https://ventureapp.atlassian.net
-          skip-branches: '^(master)$'
+          skip-branches: '^master$|^(dependabot|snyk).*'
           skip-comments: false
           pr-threshold: 1000

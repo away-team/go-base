@@ -1,11 +1,15 @@
 version: 2
 updates:
-- package-ecosystem: gomod
-  directory: "/"
-  schedule:
-    interval: daily
-    time: "10:00"
-  open-pull-requests-limit: 10
-  # Add reviewers
-  reviewers:
-    - "hqoapp/api-admins"
+  - package-ecosystem: gomod
+    directory: '/'
+    schedule:
+      interval: daily
+      time: '10:00'
+      labels:
+        - dependencies
+      commit-message:
+        prefix: 'DEPENDABOT: '
+    open-pull-requests-limit: 10
+    # Add reviewers
+    reviewers:
+      - 'hqoapp/api-admins'
